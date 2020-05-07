@@ -1,71 +1,116 @@
 <template>
   <div id="home">
-    <v-card max-width="900" class="mx-auto">
+    <v-card max-width="1000" class="mx-auto">
       <v-spacer></v-spacer>
 
       <v-list two-line subheader>
-        <v-list-item v-for="item in items" :key="item.title">
+        <v-list-item
+          v-for="item in blogs"
+          :key="item._id"
+          @click="handleBlogClick(item)"
+        >
           <v-list-item-avatar>
-            <v-icon :class="[item.iconClass]" v-text="item.icon"></v-icon>
+            <v-icon v-text="item.picUrl"></v-icon>
           </v-list-item-avatar>
 
           <v-list-item-content>
             <v-list-item-title v-text="item.title"></v-list-item-title>
-            <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
+            <v-list-item-subtitle>
+              <span
+                class="d-inline-block text-truncate"
+                style="max-width: 250px;"
+                >{{ toText(item.content) }}</span
+              >
+            </v-list-item-subtitle>
           </v-list-item-content>
 
-          <v-list-item-action>
-            <v-btn icon>
-              <v-icon color="grey lighten-1">mdi-information</v-icon>
-            </v-btn>
-          </v-list-item-action>
+          <v-list-item-action>{{
+            dateFilter(item.createTime)
+          }}</v-list-item-action>
         </v-list-item>
-
-        <v-divider inset></v-divider>
       </v-list>
     </v-card>
   </div>
 </template>
 
 <script>
+import { getBlog } from "../api/blog";
+
 export default {
   name: "Home",
   data: () => ({
-    items: [
+    blogs: [
       {
-        icon: "folder",
-        iconClass: "grey lighten-1 white--text",
-        title: "Photos",
-        subtitle: "Jan 9, 2014"
+        _id: "5e7ac87070dd753019bd62c8",
+        authorId: "123",
+        picUrl: "123",
+        title: "weq",
+        content: "asddas",
+        createTime: "2020-03-25T02:56:48.945+0000"
       },
       {
-        icon: "folder",
-        iconClass: "grey lighten-1 white--text",
-        title: "Recipes",
-        subtitle: "Jan 17, 2014"
-      },
-      {
-        icon: "folder",
-        iconClass: "grey lighten-1 white--text",
-        title: "Work",
-        subtitle: "Jan 28, 2014"
-      }
-    ],
-    items2: [
-      {
-        icon: "assignment",
-        iconClass: "blue white--text",
-        title: "Vacation itinerary",
-        subtitle: "Jan 20, 2014"
-      },
-      {
-        icon: "call_to_action",
-        iconClass: "amber white--text",
-        title: "Kitchen remodel",
-        subtitle: "Jan 10, 2014"
+        _id: "5e7ac87370dd753019bd62c9",
+        authorId: "123",
+        picUrl: "123",
+        title: "weq2",
+        content: "asddas",
+        createTime: "2020-03-25T02:56:51.692+0000"
       }
     ]
   }),
+  methods: {
+    list() {
+      getBlog()
+        .then(res => {
+          this.blogs = res;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    handleBlogClick(item) {
+      this.$store.dispatch("changeBlogItem", item);
+      this.$router.push("/blogDetailed");
+    },
+    dateFilter: function(input) {
+      var d = new Date(input);
+      var year = d.getFullYear();
+      var month =
+        d.getMonth() < 9 ? "0" + (d.getMonth() + 1) : "" + (d.getMonth() + 1);
+      var day = d.getDate() < 10 ? "0" + d.getDate() : "" + d.getDate();
+      var hour = d.getHours() < 10 ? "0" + d.getHours() : "" + d.getHours();
+      var minutes =
+        d.getMinutes() < 10 ? "0" + d.getMinutes() : "" + d.getMinutes();
+      var seconds =
+        d.getSeconds() < 10 ? "0" + d.getSeconds() : "" + d.getSeconds();
+      return (
+        year +
+        "-" +
+        month +
+        "-" +
+        day +
+        " " +
+        hour +
+        ":" +
+        minutes +
+        ":" +
+        seconds
+      );
+    },
+    toText(HTML) {
+      var input = HTML;
+      return input
+        .replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi, "")
+        .replace(/<[^>]+?>/g, "")
+        .replace(/\s+/g, " ")
+        .replace(/ /g, " ")
+        .replace(/>/g, " ");
+    }
+  },
+  created() {
+    // 获取所有博客
+    this.list();
+  },
   components: {
     //About: () => import('@/components/home/About')
   }

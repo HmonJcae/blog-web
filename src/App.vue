@@ -1,24 +1,19 @@
 <template>
   <v-app>
-    <Toolbar />
-    <v-content id="home">
-      <router-view />
-    </v-content>
+    <router-view></router-view>
+    <Snackbar></Snackbar>
   </v-app>
 </template>
 
 <script>
-import Toolbar from "./components/Toolbar";
-
+import Snackbar from "./components/Snackbar";
 export default {
   name: "App",
 
   components: {
-    Toolbar
+    Snackbar
   },
 
-  data: () => ({
-    //
-  })
+  data: () => ({})
 };
 </script>
